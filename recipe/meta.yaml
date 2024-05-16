@@ -41,6 +41,7 @@ requirements:
     - arxiv >=1.4.0,<2.0.0
     - pypdf >=3.4.0,<4.0.0
     - aleph-alpha-client >=2.15.0,<3.0.0
+    - gradientai >=1.4.0,<2.0
     - pgvector >=0.1.6,<0.2.0
     - atlassian-python-api >=3.36.0,<4.0.0
     - html2text >=2020.1.16,<2021.0.0
@@ -93,6 +94,7 @@ requirements:
     - praw >=7.7.1,<8.0.0
     - msal >=1.25.0,<2.0.0
     - databricks-vectorsearch >=0.21.0,<0.22.0
+    - cloudpickle >=2.0.0
     - dgml-utils >=0.3.0,<0.4.0
     - datasets >=2.15.0,<3.0.0
     - tree-sitter >=0.20.2,<0.21.0
