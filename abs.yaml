@@ -1,2 +1,3 @@
-upload_channels:
-  - sfe1ed40
+channels:
+  - https://staging.continuum.io/prefect/fs/langchain-feedstock/pr6/69eb35c
+  - https://staging.continuum.io/prefect/fs/httpx-sse-feedstock/pr1/1e6aaad
