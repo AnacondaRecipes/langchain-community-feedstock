@@ -1,5 +1,5 @@
 {% set name = "langchain-community" %}
-{% set version = "0.3.30" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,12 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name|replace('-', '_') }}-{{ version }}.tar.gz
-  sha256: df68fbde7f7fa5142ab93b0cbc104916b12ab4163e200edd933ee93e67956ee9
+  sha256: f3b211832728ee89f169ddce8579b80a085222ddb4f4ed445a46e977d17b1e85
+  patches:
+    - fix_tests.patch
 
 build:
-  skip: true  # [py<39]
+  skip: true  # [py<310]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
 
@@ -21,8 +23,8 @@ requirements:
     - pdm-backend
   run:
     - python
-    - langchain >=0.3.27,<2.0.0
-    - langchain-core >=0.3.75,<2.0.0
+    - langchain-classic >=1.0.0,<2.0.0
+    - langchain-core >=1.0.1,<2.0.0
     - sqlalchemy >=1.4.0,<3.0.0
     - requests >=2.32.5,<3.0.0
     - pyyaml >=5.3.0,<7.0.0
@@ -35,7 +37,25 @@ requirements:
     - numpy >=1.26.2  # [py<313]
     - numpy >=2.1.0  # [py>=313]
 
+# ModuleNotFoundError: No module named 'langchain_tests'
+{% set ignored_tests = [
+  "--ignore=tests/unit_tests/vectorstores/test_inmemory.py",
+  "--ignore=tests/unit_tests/chat_models/test_writer.py",
+  "--ignore=tests/unit_tests/chat_models/test_perplexity.py",
+  "--ignore=tests/unit_tests/chat_models/test_cloudflare_workersai.py",
+  "--ignore=tests/unit_tests/chat_models/test_litellm.py",
+  "--ignore=tests/unit_tests/tools/test_few_shot.py",
+  "--ignore=tests/unit_tests/indexes/test_sql_record_manager.py",
+  "--ignore=tests/unit_tests/document_loaders/test_hugging_face.py",
+  "--ignore=tests/unit_tests/test_sql_database_schema.py",
+  "--ignore=tests/unit_tests/load/test_dump.py",
+  "--deselect=tests/unit_tests/test_imports.py::test_glob_correct"
+
+]%}
 test:
+  source_files:
+    - tests/
+    - pyproject.toml
   imports:
     - langchain_community
     - langchain_community.adapters
@@ -70,8 +90,21 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     # Upstream tests failed due to missing langchain_tests/blockbuster/stackapi/serpapi/arxiv
+    - pytest -v tests/unit_tests {{ ignored_tests | join(' ') }}
   requires:
+    - bs4
     - pip
+    - lark
+    - toml
+    - pytest
+    - sqlalchemy
+    - pytest-mock
+    - pytest-socket
+    - pytest-asyncio
+    - responses
+    - pandas
+    - requests-mock
+    - python-blockbuster
 
 about:
   home: https://github.com/langchain-ai/langchain
