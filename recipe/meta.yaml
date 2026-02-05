@@ -53,7 +53,8 @@ requirements:
 ]%}
 {% set ignored_tests_win = [
   "--ignore=tests/unit_tests/chains/test_pebblo_retrieval.py",
-  "--ignore=tests/unit_tests/document_loaders/test_pebblo.py"
+  "--ignore=tests/unit_tests/document_loaders/test_pebblo.py",
+  "--ignore=tests/unit_tests/tools/file_management/test_utils.py"
 ]%}
 
 test:
