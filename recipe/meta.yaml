@@ -50,8 +50,12 @@ requirements:
   "--ignore=tests/unit_tests/test_sql_database_schema.py",
   "--ignore=tests/unit_tests/load/test_dump.py",
   "--deselect=tests/unit_tests/test_imports.py::test_glob_correct"
-
 ]%}
+{% set ignored_tests_win = [
+  "--ignore=tests/unit_tests/chains/test_pebblo_retrieval.py",
+  "--ignore=tests/unit_tests/document_loaders/test_pebblo.py"
+]%}
+
 test:
   source_files:
     - tests/
@@ -90,7 +94,8 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     # Upstream tests failed due to missing langchain_tests/blockbuster/stackapi/serpapi/arxiv
-    - pytest -v tests/unit_tests {{ ignored_tests | join(' ') }}
+    - pytest -v tests/unit_tests {{ ignored_tests | join(' ') }} # [unix]
+    - pytest -v tests/unit_tests {{ ignored_tests | join(' ') }} {{ ignored_tests_win | join(' ') }} # [win] 
   requires:
     - bs4
     - pip
