@@ -1,13 +1,13 @@
 {% set name = "langchain-community" %}
-{% set version = "0.4.1" %}
+{% set version = "0.4.2" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name|replace('-', '_') }}-{{ version }}.tar.gz
-  sha256: f3b211832728ee89f169ddce8579b80a085222ddb4f4ed445a46e977d17b1e85
+  sha256: a99308160d53d7e9b5965ee665e5173709914338210089fd5788ad724432c21e
   patches:
     - fix_tests.patch
 
@@ -20,22 +20,22 @@ requirements:
   host:
     - python
     - pip
-    - pdm-backend
+    - hatchling
   run:
     - python
-    - langchain-classic >=1.0.0,<2.0.0
-    - langchain-core >=1.0.1,<2.0.0
+    - langchain-core >=1.4.0,<2.0.0
+    - langchain-classic >=1.0.7,<2.0.0
     - sqlalchemy >=1.4.0,<3.0.0
     - requests >=2.32.5,<3.0.0
     - pyyaml >=5.3.0,<7.0.0
     - aiohttp >=3.8.3,<4.0.0
-    - tenacity >=8.1.0,<10.0.0,!=8.4.0
-    - dataclasses-json >=0.6.7,<0.7.0
+    - tenacity !=8.4.0,>=8.1.0,<10.0.0
     - pydantic-settings >=2.10.1,<3.0.0
     - langsmith >=0.1.125,<1.0.0
     - httpx-sse >=0.4.0,<1.0.0
     - numpy >=1.26.2  # [py<313]
     - numpy >=2.1.0  # [py>=313]
+
 
 # ModuleNotFoundError: No module named 'langchain_tests'
 {% set ignored_tests = [
@@ -50,12 +50,12 @@ requirements:
   "--ignore=tests/unit_tests/test_sql_database_schema.py",
   "--ignore=tests/unit_tests/load/test_dump.py",
   "--deselect=tests/unit_tests/test_imports.py::test_glob_correct"
-]%}
+] %}
 {% set ignored_tests_win = [
   "--ignore=tests/unit_tests/chains/test_pebblo_retrieval.py",
   "--ignore=tests/unit_tests/document_loaders/test_pebblo.py",
   "--ignore=tests/unit_tests/tools/file_management/test_utils.py"
-]%}
+] %}
 
 test:
   source_files:
@@ -95,8 +95,8 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     # Upstream tests failed due to missing langchain_tests/blockbuster/stackapi/serpapi/arxiv
-    - pytest -v tests/unit_tests {{ ignored_tests | join(' ') }} # [unix]
-    - pytest -v tests/unit_tests {{ ignored_tests | join(' ') }} {{ ignored_tests_win | join(' ') }} # [win] 
+    - pytest -vv tests/unit_tests {{ ignored_tests | join(' ') }}  # [unix]
+    - pytest -vv tests/unit_tests {{ ignored_tests | join(' ') }} {{ ignored_tests_win | join(' ') }}  # [win]
   requires:
     - bs4
     - pip
@@ -111,12 +111,13 @@ test:
     - pandas
     - requests-mock
     - python-blockbuster
+    - mypy_extensions
 
 about:
-  home: https://github.com/langchain-ai/langchain
+  home: https://docs.langchain.com
   summary: Community contributed LangChain integrations.
   description: Community contributed LangChain integrations.
-  doc_url: https://api.python.langchain.com/en/stable/community_api_reference.html
+  doc_url: https://reference.langchain.com/python/langchain_community
   dev_url: https://github.com/langchain-ai/langchain
   license: MIT
   license_family: MIT
@@ -130,3 +131,6 @@ extra:
     - hwchase17
     - efriis
     - agola11
+  skip-lints:
+    # doc_url is reachable
+    - reachable_url
